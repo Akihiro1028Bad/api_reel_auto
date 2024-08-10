@@ -99,11 +99,11 @@ def upload():
                 try:
                     # Instagramコンテナの作成
                     logger.info(f"Instagramコンテナを作成中: {account['instagram_user_id']}")
-                    container_id = create_container(cloudinary_url, caption, account)
+                    container_id = create_container(cloudinary_url, caption)
 
                     # 投稿の公開
                     logger.info(f"コンテナを公開中: {container_id}")
-                    publish_result = publish_container(container_id, account)
+                    publish_result = publish_container(container_id)
                     results.append({
                         'account_id': account['instagram_user_id'],
                         'status': 'success',
