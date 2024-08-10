@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "instagram_user_id": "ｆｄｓｆさｓｆ",
+    "access_token": "ｆｄｓｆｓだｆ",
+    "business_account_id": "ｆｄｓｆさｄさ",
+    "secret_key": "あｆさｄｆｄさ",
+    "post_flag": true
+  },
+  {
+    "instagram_user_id": "あああああ",
+    "access_token": "いいいい",
+    "business_account_id": "おおおお",
+    "secret_key": "ううううう",
+    "post_flag": true
+  },
+  {
+    "instagram_user_id": "ああああ",
+    "access_token": "いいいい",
+    "business_account_id": "ｙｙｙｙ",
+    "secret_key": "ｐｐｐｐｐｐｐ",
+    "post_flag": true
+  }
+]

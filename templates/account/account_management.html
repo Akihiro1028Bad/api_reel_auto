@@ -9,7 +9,7 @@
 {% block content %}
 <div class="container">
     <h1>アカウント管理</h1>
-    <div id="accountList">
+    <div id="accountList" class="account-list">
         <!-- アカウントリストがここに動的に挿入されます -->
     </div>
     <button id="addAccountBtn" class="btn btn-primary">新しいアカウントを追加</button>
@@ -20,6 +20,7 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <h2 id="modalTitle">アカウント追加</h2>
+        <div id="modalMessage"></div>
         <form id="accountForm">
             <div class="form-group">
                 <label for="instagramUserId">Instagram ユーザーID:</label>

@@ -8,12 +8,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModal = accountModal.querySelector('.close');
     const accountForm = document.getElementById('accountForm');
     const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
 
     // アカウント一覧を取得して表示する関数
     function fetchAndDisplayAccounts() {
         console.log('アカウント一覧を取得しています...');
+        showLoading(accountList);
         fetch('/accounts')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('サーバーエラーが発生しました');
+                }
+                return response.json();
+            })
             .then(accounts => {
                 console.log(`${accounts.length}件のアカウント情報を取得しました`);
                 accountList.innerHTML = '';
@@ -24,7 +31,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('アカウント情報の取得に失敗しました:', error);
-                alert('アカウント情報の取得に失敗しました。ページをリロードしてください。');
+                showError(accountList, 'アカウント情報の取得に失敗しました。ページをリロードしてください。');
+            })
+            .finally(() => {
+                hideLoading(accountList);
             });
     }
 
@@ -32,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function createAccountItem(account) {
         const accountItem = document.createElement('div');
         accountItem.className = 'account-item';
-        accountItem.dataset.accountId = account.instagram_user_id; // データ属性を追加
+        accountItem.dataset.accountId = account.instagram_user_id;
         accountItem.innerHTML = `
             <h3>${account.instagram_user_id}</h3>
             <p>投稿フラグ: ${account.post_flag ? 'オン' : 'オフ'}</p>
@@ -70,6 +80,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function openModal(title, accountId = null) {
         modalTitle.textContent = title;
         accountForm.reset();
+        modalMessage.textContent = '';
+        modalMessage.className = '';
         if (accountId) {
             accountForm.dataset.mode = 'edit';
             accountForm.dataset.accountId = accountId;
@@ -84,8 +96,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // アカウント詳細を取得する関数
     function fetchAccountDetails(accountId) {
         console.log(`アカウント詳細を取得しています: ${accountId}`);
+        showLoading(accountForm);
         fetch(`/accounts/${accountId}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('アカウント情報の取得に失敗しました');
+                }
+                return response.json();
+            })
             .then(account => {
                 console.log('アカウント詳細を取得しました:', account);
                 document.getElementById('instagramUserId').value = account.instagram_user_id;
@@ -96,7 +114,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('アカウント詳細の取得に失敗しました:', error);
-                alert('アカウント詳細の取得に失敗しました。もう一度お試しください。');
+                showError(modalMessage, 'アカウント詳細の取得に失敗しました。もう一度お試しください。');
+            })
+            .finally(() => {
+                hideLoading(accountForm);
             });
     }
 
@@ -131,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const method = accountForm.dataset.mode === 'edit' ? 'PUT' : 'POST';
         const url = method === 'PUT' ? `/accounts/${accountForm.dataset.accountId}` : '/accounts';
 
+        showLoading(accountForm);
         fetch(url, {
             method: method,
             headers: {
@@ -138,15 +160,24 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(accountData),
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('アカウントの登録/更新に失敗しました');
+            }
+            return response.json();
+        })
         .then(data => {
             console.log('アカウント登録/更新成功:', data);
             accountModal.style.display = 'none';
             fetchAndDisplayAccounts();
+            showSuccess(modalMessage, 'アカウントが正常に登録/更新されました');
         })
         .catch((error) => {
             console.error('アカウント登録/更新エラー:', error);
-            alert('アカウントの登録/更新に失敗しました。もう一度お試しください。');
+            showError(modalMessage, 'アカウントの登録/更新に失敗しました。もう一度お試しください。');
+        })
+        .finally(() => {
+            hideLoading(accountForm);
         });
     });
 
@@ -160,15 +191,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function deleteAccount(accountId) {
         if (confirm('このアカウントを削除してもよろしいですか？')) {
             console.log(`アカウント削除: ${accountId}`);
+            showLoading(accountList);
             fetch(`/accounts/${accountId}`, { method: 'DELETE' })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('アカウントの削除に失敗しました');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('アカウント削除成功:', data);
                     fetchAndDisplayAccounts();
+                    showSuccess(modalMessage, 'アカウントが正常に削除されました');
                 })
                 .catch(error => {
                     console.error('アカウントの削除に失敗しました:', error);
-                    alert('アカウントの削除に失敗しました。もう一度お試しください。');
+                    showError(modalMessage, 'アカウントの削除に失敗しました。もう一度お試しください。');
+                })
+                .finally(() => {
+                    hideLoading(accountList);
                 });
         }
     }
@@ -176,16 +217,64 @@ document.addEventListener('DOMContentLoaded', function() {
     // 投稿フラグの切り替え
     function togglePostFlag(accountId) {
         console.log(`投稿フラグ切り替え: ${accountId}`);
+        showLoading(accountList);
         fetch(`/accounts/${accountId}/toggle-flag`, { method: 'POST' })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('投稿フラグの切り替えに失敗しました');
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log('投稿フラグ切り替え成功:', data);
                 fetchAndDisplayAccounts();
+                showSuccess(modalMessage, '投稿フラグが正常に切り替えられました');
             })
             .catch(error => {
                 console.error('投稿フラグの切り替えに失敗しました:', error);
-                alert('投稿フラグの切り替えに失敗しました。もう一度お試しください。');
+                showError(modalMessage, '投稿フラグの切り替えに失敗しました。もう一度お試しください。');
+            })
+            .finally(() => {
+                hideLoading(accountList);
             });
+    }
+
+    // ローディング表示
+    function showLoading(element) {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'loading';
+        loadingDiv.textContent = '読み込み中...';
+        element.appendChild(loadingDiv);
+    }
+
+    // ローディング非表示
+    function hideLoading(element) {
+        const loadingDiv = element.querySelector('.loading');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
+    }
+
+    // エラーメッセージ表示
+    function showError(element, message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        element.appendChild(errorDiv);
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 5000);
+    }
+
+    // 成功メッセージ表示
+    function showSuccess(element, message) {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'success-message';
+        successDiv.textContent = message;
+        element.appendChild(successDiv);
+        setTimeout(() => {
+            successDiv.remove();
+        }, 5000);
     }
 
     // 初期表示
