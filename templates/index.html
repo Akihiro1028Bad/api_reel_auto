@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Reel アップローダー</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Instagram Reel アップローダー</h1>
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="videoFile">動画ファイルを選択:</label>
+                <input type="file" id="videoFile" name="video" accept="video/*" required>
+            </div>
+            <div class="form-group">
+                <label for="caption">キャプション:</label>
+                <textarea id="caption" name="caption" required></textarea>
+            </div>
+            <button type="submit">アップロードして投稿</button>
+        </form>
+        <div id="message"></div>
+        <div id="progress" class="progress-bar" style="display: none;">
+            <div class="progress"></div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
