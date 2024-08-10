@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}ホーム - Instagram Reel アップローダー{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container home-container">
+    <h1>Instagram Reel アップローダーへようこそ</h1>
+    <p>このアプリケーションでは、Instagram Reelの動画を簡単にアップロードし、管理することができます。</p>
+    <div class="feature-buttons">
+        <a href="{{ url_for('upload.upload_index') }}" class="btn btn-primary">動画をアップロード</a>
+        <a href="{{ url_for('account.account_management') }}" class="btn btn-secondary">アカウント管理</a>
+    </div>
+</div>
+{% endblock %}

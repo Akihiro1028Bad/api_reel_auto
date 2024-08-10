@@ -1,7 +1,7 @@
-from flask import Flask
+from flask import Flask, render_template
 from app.config import Config
 from app.routes.account_routes import account_bp
-from app.routes.routes import main  # この行を修正
+from app.routes.upload_routes import upload_bp
 
 def create_app():
     """
@@ -13,7 +13,12 @@ def create_app():
     # アカウント管理用のBlueprintを登録
     app.register_blueprint(account_bp, url_prefix='/account')
 
-    # メインのBlueprintを登録
-    app.register_blueprint(main)  # この行を修正
+    # アップロード用のBlueprintを登録
+    app.register_blueprint(upload_bp, url_prefix='/upload')
+
+    # ルートURLのルーティングを追加
+    @app.route('/')
+    def index():
+        return render_template('home.html')
 
     return app

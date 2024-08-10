@@ -10,7 +10,7 @@ account_service = AccountService('data/accounts.json')
 def account_management():
     """アカウント管理ページのルート"""
     logger.info("アカウント管理ページにアクセスしました")
-    return render_template('account/management.html')
+    return render_template('account/account_management.html')
 
 @account_bp.route('/accounts', methods=['GET'])
 def get_accounts():

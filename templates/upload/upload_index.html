@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}アップロード - Instagram Reel アップローダー{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Instagram Reel アップローダー</h1>
+    <form id="uploadForm">
+        <div class="form-group">
+            <label for="folderInput">フォルダを選択:</label>
+            <input type="file" id="folderInput" name="folder" webkitdirectory directory multiple required>
+        </div>
+        <div class="form-group">
+            <label for="caption">キャプション:</label>
+            <textarea id="caption" name="caption" required></textarea>
+        </div>
+        <button type="submit">ランダム選択して投稿</button>
+    </form>
+    <div id="message"></div>
+    <div id="progress" class="progress-bar" style="display: none;">
+        <div class="progress"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}
