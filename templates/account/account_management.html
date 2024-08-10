@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}アカウント管理 - Instagram Reel アップローダー{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/account_management.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>アカウント管理</h1>
+    <div id="accountList">
+        <!-- アカウントリストがここに動的に挿入されます -->
+    </div>
+    <button id="addAccountBtn" class="btn btn-primary">新しいアカウントを追加</button>
+</div>
+
+<!-- アカウント追加/編集モーダル -->
+<div id="accountModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modalTitle">アカウント追加</h2>
+        <form id="accountForm">
+            <div class="form-group">
+                <label for="instagramUserId">Instagram ユーザーID:</label>
+                <input type="text" id="instagramUserId" name="instagramUserId" required>
+            </div>
+            <div class="form-group">
+                <label for="accessToken">アクセストークン:</label>
+                <input type="text" id="accessToken" name="accessToken" required>
+            </div>
+            <div class="form-group">
+                <label for="businessAccountId">ビジネスアカウントID:</label>
+                <input type="text" id="businessAccountId" name="businessAccountId" required>
+            </div>
+            <div class="form-group">
+                <label for="secretKey">シークレットキー:</label>
+                <input type="text" id="secretKey" name="secretKey" required>
+            </div>
+            <div class="form-group">
+                <label for="postFlag">
+                    <input type="checkbox" id="postFlag" name="postFlag">
+                    投稿を有効にする
+                </label>
+            </div>
+            <button type="submit" class="btn btn-success">保存</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/account_management.js') }}"></script>
+{% endblock %}
