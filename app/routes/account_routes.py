@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from app.services.account_service import AccountService
 from app.utils.logger import setup_logger
+import traceback
 
 account_bp = Blueprint('account', __name__)
 logger = setup_logger(__name__)
@@ -14,7 +15,6 @@ def account_management():
 
 @account_bp.route('/accounts', methods=['GET'])
 def get_accounts():
-    """登録されているすべてのアカウント情報を取得"""
     logger.info("全アカウント情報の取得リクエストを受信しました")
     try:
         accounts = account_service.get_all_accounts()
@@ -22,11 +22,11 @@ def get_accounts():
         return jsonify(accounts)
     except Exception as e:
         logger.error(f"アカウント情報の取得中にエラーが発生しました: {str(e)}")
+        logger.exception("詳細なエラー情報:")
         return jsonify({"error": "アカウント情報の取得に失敗しました"}), 500
 
-@account_bp.route('/accounts', methods=['POST'])
+@account_bp.route('/accounts/', methods=['POST'])
 def add_account():
-    """新しいアカウントを追加"""
     logger.info("新規アカウント追加リクエストを受信しました")
     account_data = request.json
     logger.debug(f"受信したアカウントデータ: {account_data}")
@@ -36,7 +36,13 @@ def add_account():
         return jsonify({"message": "アカウントが正常に追加されました"}), 201
     except Exception as e:
         logger.error(f"アカウントの追加中にエラーが発生しました: {str(e)}")
-        return jsonify({"error": "アカウントの追加に失敗しました"}), 500
+        error_traceback = traceback.format_exc()
+        logger.error(f"詳細なエラー情報:\n{error_traceback}")
+        return jsonify({
+            "error": "アカウントの追加に失敗しました",
+            "details": str(e),
+            "traceback": error_traceback
+        }), 500
 
 @account_bp.route('/accounts/<account_id>', methods=['PUT'])
 def update_account(account_id):

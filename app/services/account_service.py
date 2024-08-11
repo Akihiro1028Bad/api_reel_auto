@@ -18,14 +18,27 @@ class AccountService:
         """すべてのアカウント情報を取得する"""
         logger.info("すべてのアカウント情報を取得しています")
         return read_json(self.json_file_path)
+    
+    def get_account(self, account_id):
+        """特定のアカウント情報を取得する"""
+        logger.info(f"アカウント情報を取得しています: {account_id}")
+        accounts = self.get_all_accounts()
+        for account in accounts:
+            if account['instagram_user_id'] == account_id:
+                return account
+        return None  # アカウントが見つからない場合はNoneを返す
 
     def add_account(self, account_data):
-        """新しいアカウントを追加する"""
         logger.info(f"新しいアカウントを追加しています: {account_data['instagram_user_id']}")
-        accounts = self.get_all_accounts()
-        accounts.append(account_data)
-        write_json(self.json_file_path, accounts)
-        logger.info("アカウントが正常に追加されました")
+        try:
+            accounts = self.get_all_accounts()
+            accounts.append(account_data)
+            write_json(self.json_file_path, accounts)
+            logger.info("アカウントが正常に追加されました")
+        except Exception as e:
+            logger.error(f"アカウント追加中にエラーが発生しました: {str(e)}")
+            logger.exception("詳細なエラー情報:")
+            raise
 
     def update_account(self, account_id, updated_data):
         """既存のアカウント情報を更新する"""

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function fetchAndDisplayAccounts() {
         console.log('アカウント一覧を取得しています...');
         showLoading(accountList);
-        fetch('/accounts')
+        fetch('/account/accounts')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('サーバーエラーが発生しました');
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function fetchAccountDetails(accountId) {
         console.log(`アカウント詳細を取得しています: ${accountId}`);
         showLoading(accountForm);
-        fetch(`/accounts/${accountId}`)
+        fetch(`/account/accounts/${accountId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('アカウント情報の取得に失敗しました');
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('送信するアカウントデータ:', accountData);
 
         const method = accountForm.dataset.mode === 'edit' ? 'PUT' : 'POST';
-        const url = method === 'PUT' ? `/accounts/${accountForm.dataset.accountId}` : '/accounts';
+        const url = method === 'PUT' ? `/account/accounts/${accountForm.dataset.accountId}` : '/account/accounts/';
 
         showLoading(accountForm);
         fetch(url, {
@@ -160,13 +160,11 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(accountData),
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('アカウントの登録/更新に失敗しました');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
             console.log('アカウント登録/更新成功:', data);
             accountModal.style.display = 'none';
             fetchAndDisplayAccounts();
@@ -174,7 +172,14 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch((error) => {
             console.error('アカウント登録/更新エラー:', error);
-            showError(modalMessage, 'アカウントの登録/更新に失敗しました。もう一度お試しください。');
+            let errorMessage = 'アカウントの登録/更新に失敗しました。';
+            if (error.details) {
+                errorMessage += `\n詳細: ${error.details}`;
+            }
+            if (error.traceback) {
+                errorMessage += `\n\nエラートレース:\n${error.traceback}`;
+            }
+            showError(modalMessage, errorMessage);
         })
         .finally(() => {
             hideLoading(accountForm);
@@ -192,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (confirm('このアカウントを削除してもよろしいですか？')) {
             console.log(`アカウント削除: ${accountId}`);
             showLoading(accountList);
-            fetch(`/accounts/${accountId}`, { method: 'DELETE' })
+            fetch(`/account/accounts/${accountId}`, { method: 'DELETE' })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('アカウントの削除に失敗しました');
@@ -218,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function togglePostFlag(accountId) {
         console.log(`投稿フラグ切り替え: ${accountId}`);
         showLoading(accountList);
-        fetch(`/accounts/${accountId}/toggle-flag`, { method: 'POST' })
+        fetch(`/account/accounts/${accountId}/toggle-flag`, { method: 'POST' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('投稿フラグの切り替えに失敗しました');
@@ -255,16 +260,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // エラーメッセージ表示
-    function showError(element, message) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
-        element.appendChild(errorDiv);
-        setTimeout(() => {
-            errorDiv.remove();
-        }, 5000);
-    }
+    // エラーメッセージ表示関数を改善
+function showError(element, message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.innerHTML = message.replace(/\n/g, '<br>');
+    element.appendChild(errorDiv);
+    // エラーメッセージを5分後に自動で消す
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 300000);
+}
 
     // 成功メッセージ表示
     function showSuccess(element, message) {
