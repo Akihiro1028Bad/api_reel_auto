@@ -11,15 +11,15 @@ def setup_logger(name):
         logging.Logger: 設定されたロガーインスタンス
     """
     logger = logging.getLogger(name)
-    logger.setLevel(logging.ERROR)
+    logger.setLevel(logging.INFO)
 
     # ファイルハンドラ
     file_handler = logging.FileHandler('app.log', encoding='utf-8')
-    file_handler.setLevel(logging.ERROR)
+    file_handler.setLevel(logging.INFO)
 
     # コンソールハンドラ
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.ERROR)
+    console_handler.setLevel(logging.INFO)
 
     # フォーマッタ
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

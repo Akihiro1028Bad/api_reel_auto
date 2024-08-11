@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}キャプション管理 - Instagram Reel アップローダー{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/caption_management.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>キャプション管理</h1>
+    <div id="captionList" class="caption-list">
+        {% for caption in captions %}
+        <div class="caption-item">
+            <p class="caption-text">{{ caption.text }}</p>
+            <div class="caption-actions">
+                <button class="btn btn-primary edit-caption" data-id="{{ caption.id }}" data-text="{{ caption.text }}">編集</button>
+                <button class="btn btn-danger delete-caption" data-id="{{ caption.id }}">削除</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <button id="addCaptionBtn" class="btn btn-success">新しいキャプションを追加</button>
+</div>
+
+<!-- キャプション追加/編集モーダル -->
+<div id="captionModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modalTitle">キャプション追加</h2>
+        <div id="modalMessage"></div>
+        <form id="captionForm">
+            <div class="form-group">
+                <label for="captionText">キャプション:</label>
+                <textarea id="captionText" name="captionText" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">保存</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/caption_management.js') }}"></script>
+{% endblock %}

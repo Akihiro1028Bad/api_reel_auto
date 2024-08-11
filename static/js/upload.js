@@ -34,6 +34,16 @@ document.addEventListener('DOMContentLoaded', function() {
             messageDiv.className = 'success';
             progressIndicator.style.width = '100%';
             log(`アップロード成功: ${data.message}`);
+            // 結果の詳細を表示
+            if (data.results) {
+                const resultsList = document.createElement('ul');
+                data.results.forEach(result => {
+                    const li = document.createElement('li');
+                    li.textContent = `アカウント ${result.account_id}: ${result.status} - ${result.message}`;
+                    resultsList.appendChild(li);
+                });
+                messageDiv.appendChild(resultsList);
+            }
         })
         .catch(error => {
             messageDiv.textContent = 'エラー: ' + error.message;
