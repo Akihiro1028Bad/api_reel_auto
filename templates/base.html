@@ -18,6 +18,8 @@
                     <li><a href="{{ url_for('upload.upload_index') }}" {% if request.endpoint == 'upload.upload_index' %}class="active"{% endif %}>アップロード</a></li>
                     <li><a href="{{ url_for('account.account_management') }}" {% if request.endpoint == 'account.account_management' %}class="active"{% endif %}>アカウント管理</a></li>
                     <li><a href="{{ url_for('caption.manage_captions') }}" {% if request.endpoint == 'caption.manage_captions' %}class="active"{% endif %}>キャプション管理</a></li>
+                    <!-- 以下の行を追加 -->
+                    <li><a href="{{ url_for('schedule.schedule_management') }}" {% if request.endpoint == 'schedule.schedule_management' %}class="active"{% endif %}>スケジュール管理</a></li>
                 </ul>
                 <div class="menu-icon">
                     <div class="bar"></div>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}スケジュール管理 - Instagram Reel アップローダー{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/schedule_management.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="schedule-container">
+    <h1>投稿スケジュール管理</h1>
+    <form id="scheduleForm">
+        <ul id="scheduleList">
+            <!-- スケジュールリストがここに動的に挿入されます -->
+        </ul>
+        <button type="button" id="addScheduleBtn">新しい時間を追加</button>
+        <button type="submit">スケジュールを保存</button>
+    </form>
+    <div id="message"></div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/schedule_management.js') }}"></script>
+{% endblock %}
