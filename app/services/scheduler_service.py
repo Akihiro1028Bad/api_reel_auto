@@ -65,80 +65,76 @@ class SchedulerService:
         except Exception as e:
             logger.error(f"スケジュールの保存中にエラーが発生しました: {str(e)}")
 
-    import random
-import os
-import time
-
-def post_video(self):
-    """複数の動画を各アカウントにランダムで投稿する"""
-    logger.info("自動投稿プロセスを開始します")
-    
-    # 投稿数を設定（必要に応じて変更可能）
-    POSTS_PER_ACCOUNT = 3
-    
-    # 固定キャプションを設定（三重引用符を使用）
-    CAPTION = """ストーリーもみた方がいいよ
-
-#カップル
-#恋愛
-#低身長女子
-#低身長コーデ
-#低身長ファッション
-#女子
-#女子大生
-#うらあか男子と繋がりたい"""
-
-    try:
-        # 1分から60分の間でランダムに待機時間を設定
-        wait_time = random.randint(60, 3600)  # 60秒（1分）から3600秒（60分）の間
-        # アカウント情報を読み込む
-        with open(self.accounts_file, 'r') as f:
-            accounts = json.load(f)
+    def post_video(self):
+        """複数の動画を各アカウントにランダムで投稿する"""
+        logger.info("自動投稿プロセスを開始します")
         
-        # 投稿可能なアカウントをフィルタリング
-        active_accounts = [acc for acc in accounts if acc['post_flag']]
+        # 投稿数を設定（必要に応じて変更可能）
+        POSTS_PER_ACCOUNT = 3
         
-        if not active_accounts:
-            logger.warning("投稿可能なアカウントがありません")
-            return
+        # 固定キャプションを設定（三重引用符を使用）
+        CAPTION = """ストーリーもみた方がいいよ
 
-        # 利用可能な全ての動画ファイルをリストアップ
-        all_video_files = [f for f in os.listdir(self.videos_folder) if f.endswith(('.mp4', '.mov', '.avi'))]
-        if len(all_video_files) < POSTS_PER_ACCOUNT:
-            logger.warning(f"投稿可能な動画ファイルが足りません。必要数: {POSTS_PER_ACCOUNT}, 現在の数: {len(all_video_files)}")
-            return
+        #カップル
+        #恋愛
+        #低身長女子
+        #低身長コーデ
+        #低身長ファッション
+        #女子
+        #女子大生
+        #うらあか男子と繋がりたい"""
 
-        # 各アクティブアカウントに投稿
-        for account in active_accounts:
-            logger.info(f"アカウント {account['instagram_user_id']} の投稿を開始します")
+        try:
+            # 1分から60分の間でランダムに待機時間を設定
+            wait_time = random.randint(60, 3600)  # 60秒（1分）から3600秒（60分）の間
+            # アカウント情報を読み込む
+            with open(self.accounts_file, 'r') as f:
+                accounts = json.load(f)
             
-            # このアカウント用にランダムに動画を選択
-            selected_videos = random.sample(all_video_files, POSTS_PER_ACCOUNT)
+            # 投稿可能なアカウントをフィルタリング
+            active_accounts = [acc for acc in accounts if acc['post_flag']]
             
-            for video in selected_videos:
-                try:
-                    # 1分から10分のランダムな待機時間を設定
-                    wait_time = random.randint(60, 600)
-                    logger.info(f"次の投稿まで {wait_time} 秒待機します")
-                    time.sleep(wait_time)
+            if not active_accounts:
+                logger.warning("投稿可能なアカウントがありません")
+                return
 
-                    video_path = os.path.join(self.videos_folder, video)
-                    
-                    # Cloudinaryにアップロード
-                    cloudinary_url = upload_to_cloudinary(video_path)
-                    
-                    # Instagramコンテナを作成して公開
-                    container_id = create_container(cloudinary_url, CAPTION)
-                    publish_container(container_id)
-                    
-                    logger.info(f"アカウント {account['instagram_user_id']} に動画 {video} を正常に投稿しました")
+            # 利用可能な全ての動画ファイルをリストアップ
+            all_video_files = [f for f in os.listdir(self.videos_folder) if f.endswith(('.mp4', '.mov', '.avi'))]
+            if len(all_video_files) < POSTS_PER_ACCOUNT:
+                logger.warning(f"投稿可能な動画ファイルが足りません。必要数: {POSTS_PER_ACCOUNT}, 現在の数: {len(all_video_files)}")
+                return
+
+            # 各アクティブアカウントに投稿
+            for account in active_accounts:
+                logger.info(f"アカウント {account['instagram_user_id']} の投稿を開始します")
                 
-                except Exception as e:
-                    logger.error(f"アカウント {account['instagram_user_id']} への動画 {video} の投稿中にエラーが発生しました: {str(e)}")
-            
-            logger.info(f"アカウント {account['instagram_user_id']} の全ての投稿が完了しました")
+                # このアカウント用にランダムに動画を選択
+                selected_videos = random.sample(all_video_files, POSTS_PER_ACCOUNT)
+                
+                for video in selected_videos:
+                    try:
+                        # 1分から10分のランダムな待機時間を設定
+                        wait_time = random.randint(60, 600)
+                        logger.info(f"次の投稿まで {wait_time} 秒待機します")
+                        time.sleep(wait_time)
 
-    except Exception as e:
-        logger.error(f"自動投稿プロセス全体でエラーが発生しました: {str(e)}")
+                        video_path = os.path.join(self.videos_folder, video)
+                        
+                        # Cloudinaryにアップロード
+                        cloudinary_url = upload_to_cloudinary(video_path)
+                        
+                        # Instagramコンテナを作成して公開
+                        container_id = create_container(cloudinary_url, CAPTION)
+                        publish_container(container_id)
+                        
+                        logger.info(f"アカウント {account['instagram_user_id']} に動画 {video} を正常に投稿しました")
+                    
+                    except Exception as e:
+                        logger.error(f"アカウント {account['instagram_user_id']} への動画 {video} の投稿中にエラーが発生しました: {str(e)}")
+                
+                logger.info(f"アカウント {account['instagram_user_id']} の全ての投稿が完了しました")
+
+        except Exception as e:
+            logger.error(f"自動投稿プロセス全体でエラーが発生しました: {str(e)}")
 
 scheduler_service = SchedulerService()
