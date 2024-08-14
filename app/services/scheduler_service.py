@@ -71,7 +71,7 @@ class SchedulerService:
         logger.info("自動投稿プロセスを開始します")
         
         # 投稿数を設定（必要に応じて変更可能）
-        POSTS_PER_ACCOUNT = 3
+        POSTS_PER_ACCOUNT = 1
         
         # 固定キャプションを設定（三重引用符を使用）
         CAPTION = """ストーリーもみた方がいいよ
@@ -126,6 +126,7 @@ class SchedulerService:
                         
                         # Instagramコンテナを作成して公開
                         container_id = create_container(cloudinary_url, CAPTION)
+                        time.sleep(30)
                         publish_container(container_id)
                         
                         logger.info(f"アカウント {account['instagram_user_id']} に動画 {video} を正常に投稿しました")

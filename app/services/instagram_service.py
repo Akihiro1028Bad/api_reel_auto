@@ -8,7 +8,7 @@ def create_container(video_url, caption):
     """
     Instagram APIを使用してコンテナを作成する
     """
-    url = f"https://graph.facebook.com/v17.0/{Config.INSTAGRAM_BUSINESS_ACCOUNT_ID}/media"
+    url = f"https://graph.facebook.com/v20.0/{Config.INSTAGRAM_BUSINESS_ACCOUNT_ID}/media"
     params = {
         'video_url': video_url,
         'media_type': 'REELS',
@@ -33,7 +33,7 @@ def check_media_status(container_id):
     """
     メディアのステータスをチェックする
     """
-    url = f"https://graph.facebook.com/v17.0/{container_id}"
+    url = f"https://graph.facebook.com/v20.0/{container_id}"
     params = {
         'fields': 'status_code',
         'access_token': Config.INSTAGRAM_ACCESS_TOKEN
