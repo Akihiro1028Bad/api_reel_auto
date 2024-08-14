@@ -6,6 +6,7 @@ from app.utils.logger import setup_logger
 import random
 import os
 import time
+from werkzeug.datastructures import FileStorage
 
 logger = setup_logger(__name__)
 
@@ -86,7 +87,7 @@ class SchedulerService:
 
         try:
             # 1分から60分の間でランダムに待機時間を設定
-            wait_time = random.randint(60, 3600)  # 60秒（1分）から3600秒（60分）の間
+            #wait_time = random.randint(60, 3600)  # 60秒（1分）から3600秒（60分）の間
             # アカウント情報を読み込む
             with open(self.accounts_file, 'r') as f:
                 accounts = json.load(f)
@@ -110,18 +111,18 @@ class SchedulerService:
                 
                 # このアカウント用にランダムに動画を選択
                 selected_videos = random.sample(all_video_files, POSTS_PER_ACCOUNT)
-                
-                for video in selected_videos:
+        
+            for video in selected_videos:
                     try:
                         # 1分から10分のランダムな待機時間を設定
-                        wait_time = random.randint(60, 600)
-                        logger.info(f"次の投稿まで {wait_time} 秒待機します")
-                        time.sleep(wait_time)
-
-                        video_path = os.path.join(self.videos_folder, video)
+                        #wait_time = random.randint(60, 600)
+                        #logger.info(f"次の投稿まで {wait_time} 秒待機します")
+                        #time.sleep(wait_time)
                         
-                        # Cloudinaryにアップロード
-                        cloudinary_url = upload_to_cloudinary(video_path)
+                        # ファイルを開いてFileStorageオブジェクトを作成
+                        with open(os.path.join(self.videos_folder, video), 'rb') as video_file:
+                            file_storage = FileStorage(video_file)
+                            cloudinary_url = upload_to_cloudinary(file_storage)
                         
                         # Instagramコンテナを作成して公開
                         container_id = create_container(cloudinary_url, CAPTION)
@@ -132,7 +133,7 @@ class SchedulerService:
                     except Exception as e:
                         logger.error(f"アカウント {account['instagram_user_id']} への動画 {video} の投稿中にエラーが発生しました: {str(e)}")
                 
-                logger.info(f"アカウント {account['instagram_user_id']} の全ての投稿が完了しました")
+                    logger.info(f"アカウント {account['instagram_user_id']} の全ての投稿が完了しました")
 
         except Exception as e:
             logger.error(f"自動投稿プロセス全体でエラーが発生しました: {str(e)}")
